@@ -19,6 +19,8 @@ urlpatterns = [
 
     # Seguridad.
     path('api/perfil/', views.perfil, name='api_perfil'),
-    path('api/admin-info/', views.panel_admin_api, name='panel_admin_info')
+    path('api/admin-info/', views.panel_admin_api, name='panel_admin_info'),
 
+    # Sesión.
+    path('api/sesion/', views.contador_sesion, name='contador_sesion'),
 ]
