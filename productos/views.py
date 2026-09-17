@@ -2,10 +2,50 @@ from django.http import HttpResponse, JsonResponse
 from .models import Producto, Categoria
 
 from rest_framework import status
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from .serializers import ProductoSerializer, CategoriaSerializer
+
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.decorators import (
+    api_view, authentication_classes, permission_classes
+)
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+
+#------------------------------------------------------------------------------------------
+
+# Se crea demostración con request session.
+@api_view(['GET'])
+def contador_sesion(request):
+    visitas = request.session.get("visitas", 0) + 1
+    request.session["visitas"] = visitas
+    return Response({
+        "Visitas en esta sesión: ": visitas
+    })
+
+#------------------------------------------------------------------------------------------
+
+# Creamos un endPoint reservado para el personal administrador.
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAdminUser])
+def panel_admin_api(request):
+    return Response({
+        "mensaje": "Acceso administrativo permitido!"
+    })
+
+#------------------------------------------------------------------------------------------
+
+# Creamos un endPoint protegido.
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def perfil(request):
+    return Response({
+        "id": request.user.id,
+        "name": request.user.username,
+        "email": request.user.email,
+    })
 
 #------------------------------------------------------------------------------------------
 
